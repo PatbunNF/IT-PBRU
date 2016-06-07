@@ -62,7 +62,7 @@ public class signUpActivity extends AppCompatActivity {
 
         OkHttpClient okHttpClient = new OkHttpClient();
         RequestBody requestBody = new FormEncodingBuilder()
-                .add("isAdd", "add")
+                .add("isAdd", "true")
                 .add("Name", nameString)
                 .add("Surname", surnameString)
                 .add("User", userString)
