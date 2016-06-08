@@ -2,6 +2,7 @@ package com.example.lap324_08.itpbru;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.CalendarView;
@@ -37,25 +38,44 @@ public class CalendarActivity extends AppCompatActivity {
         builder.setCancelable(false);
         builder.setIcon(R.drawable.bird48);
         builder.setTitle(strDate);
-        builder.setMessage("Do you want to save your receiving/spending ?");
-        builder.setNegativeButton("Not yet...", new DialogInterface.OnClickListener() {
+        builder.setMessage("Do you want to save your receiving/spending lists?");
+
+        //  1
+        builder.setNegativeButton("Spending", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+
+                Intent intent = new Intent(CalendarActivity.this, UploadAccount.class);
+                intent.putExtra("Login", getIntent().getStringArrayExtra("Login"));
+                intent.putExtra("InOut", 1);
+                startActivity(intent);
+
                 dialog.dismiss();
             }
         });
+
+        // 0
         builder.setPositiveButton("Receiving", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+
+                Intent intent = new Intent(CalendarActivity.this, UploadAccount.class);
+                intent.putExtra("Login", getIntent().getStringArrayExtra("Login"));
+                intent.putExtra("InOut", 0);
+                startActivity(intent);
+
                 dialog.dismiss();
             }
         });
-        builder.setNeutralButton("Spending", new DialogInterface.OnClickListener() {
+
+        //  Cancel
+        builder.setNeutralButton("Not yet...", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
             }
         });
+        builder.show();
 
     }   //  confirmDialog...
 
