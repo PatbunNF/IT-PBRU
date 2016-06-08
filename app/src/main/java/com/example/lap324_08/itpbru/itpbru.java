@@ -3,6 +3,7 @@ package com.example.lap324_08.itpbru;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
@@ -10,6 +11,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
@@ -25,6 +27,7 @@ public class itpbru extends AppCompatActivity {
     private static final String urlJSON = "http://swiftcodingthai.com/pbru2/get_user_master.php";
     private EditText userEditText, passwordEditText;
     private String userString, passwordString;
+    private String[] loginStrings;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,7 +63,7 @@ public class itpbru extends AppCompatActivity {
         //  Check spacing...
         if (userString.equals("") || passwordString.equals("")) {
             MyAlert myAlert = new MyAlert();
-            myAlert.myDialog(this, "Nah~", "Please enter user and password correctly.");
+            myAlert.myDialog(this, "Nah~", "Please enter your user and password correctly.");
         } else {
             checkUserPasword();
         }
@@ -69,7 +72,36 @@ public class itpbru extends AppCompatActivity {
 
     private void checkUserPasword() {
 
+        try {
 
+            SQLiteDatabase sqLiteDatabase = openOrCreateDatabase(MyOpenHelper.database_name, MODE_PRIVATE, null);
+            Cursor cursor = sqLiteDatabase.rawQuery("SELECT * FROM userTABLE WHERE User = " + "'" + userString + "'", null);
+            cursor.moveToFirst();
+
+            loginStrings = new String[cursor.getColumnCount()];
+            for (int i=0; i<cursor.getColumnCount(); i++) {
+                loginStrings[i] = cursor.getString(i);
+            }   //  For...
+            cursor.close();
+
+            //  Check the password...
+            if (passwordString.equals(loginStrings[4])) {
+                Toast.makeText(this, "Welcome back! " + loginStrings[1] + " " + loginStrings[2], Toast.LENGTH_SHORT).show();
+
+                Intent intent = new Intent(itpbru.this, CalendarActivity.class);
+                intent.putExtra("Login", loginStrings);
+                startActivity(intent);
+                finish();
+
+            } else {
+                MyAlert myAlert = new MyAlert();
+                myAlert.myDialog(this, "Wrong password :(", "We've found you! But if this is really you, please enter your password again...");
+            }  //   If, else...
+
+        } catch (Exception e) {
+            MyAlert myAlert = new MyAlert();
+            myAlert.myDialog(this, "No user found :(", "Sorry, but we cannot find you in our database, please try again... \n\nOr if you didn't register yet, just tab the 'SIGN UP' button :)");
+        }
 
     }   //  Checking user & password...
 
@@ -109,7 +141,7 @@ public class itpbru extends AppCompatActivity {
         protected void onPreExecute() {
             super.onPreExecute();
 
-            progressDialog = ProgressDialog.show(context, "Synchronizing Server", "Please wait...");
+            progressDialog = ProgressDialog.show(context, "Synchronizing Server", "Might take a moment, please wait...");
 
         }   //  On pre...
 
